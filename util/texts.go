@@ -66,15 +66,13 @@ func CamelCased(s string) string {
 	return string(r)
 }
 
-// Underscore converts string to under_scored
-// from github.com/go-pg/pg/internal
-func Underscore(s string) string {
+func separated(s string, delim byte) string {
 	r := make([]byte, 0, len(s)+5)
 	for i := 0; i < len(s); i++ {
 		c := s[i]
 		if IsUpper(c) {
 			if i > 0 && i+1 < len(s) && (IsLower(s[i-1]) || IsLower(s[i+1])) {
-				r = append(r, '_', ToLower(c))
+				r = append(r, delim, ToLower(c))
 			} else {
 				r = append(r, ToLower(c))
 			}
@@ -83,6 +81,17 @@ func Underscore(s string) string {
 		}
 	}
 	return string(r)
+}
+
+// Underscore converts string to under_scored
+// from github.com/go-pg/pg/internal
+func Underscore(s string) string {
+	return separated(s, '_')
+}
+
+// Dash converts string to dash-separated
+func Dash(s string) string {
+	return strings.ReplaceAll(separated(s, '-'), "_", "-")
 }
 
 // Sanitize makes string suitable for golang var, const, field, type name

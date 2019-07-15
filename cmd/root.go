@@ -3,6 +3,7 @@ package cmd
 import (
 	"os"
 
+	"github.com/dizzyfool/genna/generators/mfd"
 	"github.com/dizzyfool/genna/generators/model"
 	"github.com/dizzyfool/genna/generators/named"
 	"github.com/dizzyfool/genna/generators/search"
@@ -44,6 +45,8 @@ func init() {
 		search.CreateCommand(logger),
 		validate.CreateCommand(logger),
 		named.CreateCommand(logger),
+
+		base.CreateCommand("mfd", "XML generator for mdf project", mfd.New(logger)),
 	)
 }
 

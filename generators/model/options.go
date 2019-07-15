@@ -12,7 +12,6 @@ type Options struct {
 	base.Options
 
 	// Package sets package name for model
-	// Works only with SchemaPackage = false
 	Package string
 
 	// Do not replace primary key name to ID
