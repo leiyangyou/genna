@@ -18,6 +18,11 @@ const (
 	pkg = "pkg"
 )
 
+// CreateCommand creates generator command
+func CreateCommand(logger *zap.Logger) *cobra.Command {
+	return base.CreateCommand("mfd", "XML generator for mdf project", New(logger))
+}
+
 // Generator represents mfd generator
 type Generator struct {
 	logger  *zap.Logger

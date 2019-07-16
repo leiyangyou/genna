@@ -46,7 +46,7 @@ func init() {
 		validate.CreateCommand(logger),
 		named.CreateCommand(logger),
 
-		base.CreateCommand("mfd", "XML generator for mdf project", mfd.New(logger)),
+		mfd.CreateCommand(logger),
 	)
 }
 
