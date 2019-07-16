@@ -32,8 +32,8 @@ func newEazeEntity(entity model.Entity) EazeEntity {
 	search := make([]TemplateAttribute, len(entity.Columns))
 	attributes := make([]TemplateAttribute, len(entity.Columns))
 	for i, column := range entity.Columns {
-		search[i] = newTemplateAttribute(entity, column, false)
-		attributes[i] = newTemplateAttribute(entity, column, true)
+		search[i] = newTemplateAttribute(entity, column, true)
+		attributes[i] = newTemplateAttribute(entity, column, false)
 	}
 
 	return EazeEntity{
@@ -47,7 +47,7 @@ func newEazeEntity(entity model.Entity) EazeEntity {
 }
 
 func newTemplateAttribute(entity model.Entity, column model.Column, isSearch bool) TemplateAttribute {
-	inputType := inputType(column, true)
+	inputType := inputType(column, isSearch)
 
 	return TemplateAttribute{
 		Name:       column.PGName,
@@ -92,7 +92,7 @@ func canSearch(column model.Column, isSearch bool) bool {
 }
 
 func inputType(column model.Column, isSearch bool) string {
-	if column.PGType == model.TypePGText && column.PGName == "description" && !isSearch {
+	if column.PGType == model.TypePGText && !isSearch {
 		return TypeHTMLEditor
 	}
 
