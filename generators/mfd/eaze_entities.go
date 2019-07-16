@@ -8,10 +8,11 @@ import (
 	"github.com/dizzyfool/genna/util"
 )
 
+// NewEazeEntities creates entities for xml
 func NewEazeEntities(entities []model.Entity) EazeEntities {
 	eazeEntities := make([]EazeEntity, len(entities))
 	for i, ent := range entities {
-		eazeEntities[i] = NewEazeEntity(ent)
+		eazeEntities[i] = newEazeEntity(ent)
 	}
 
 	return EazeEntities{
@@ -22,7 +23,7 @@ func NewEazeEntities(entities []model.Entity) EazeEntities {
 	}
 }
 
-func NewEazeEntity(entity model.Entity) EazeEntity {
+func newEazeEntity(entity model.Entity) EazeEntity {
 	cacheDeps := make([]string, len(entity.Relations))
 	for i, relation := range entity.Relations {
 		cacheDeps[i] = relation.TargetPGFullName
@@ -31,8 +32,8 @@ func NewEazeEntity(entity model.Entity) EazeEntity {
 	search := make([]TemplateAttribute, len(entity.Columns))
 	attributes := make([]TemplateAttribute, len(entity.Columns))
 	for i, column := range entity.Columns {
-		search[i] = NewTemplateAttribute(entity, column, false)
-		attributes[i] = NewTemplateAttribute(entity, column, true)
+		search[i] = newTemplateAttribute(entity, column, false)
+		attributes[i] = newTemplateAttribute(entity, column, true)
 	}
 
 	return EazeEntity{
@@ -45,21 +46,21 @@ func NewEazeEntity(entity model.Entity) EazeEntity {
 	}
 }
 
-func NewTemplateAttribute(entity model.Entity, column model.Column, isSearch bool) TemplateAttribute {
-	inputType := InputType(column, true)
+func newTemplateAttribute(entity model.Entity, column model.Column, isSearch bool) TemplateAttribute {
+	inputType := inputType(column, true)
 
 	return TemplateAttribute{
 		Name:       column.PGName,
-		TitleKey:   LangPath(entity, column),
+		TitleKey:   langPath(entity, column),
 		Type:       inputType,
-		CanEdit:    CanEdit(column, isSearch),
-		CanShow:    CanShow(column, isSearch),
-		CanSearch:  CanSearch(column, isSearch),
-		Parameters: InputParams(inputType, column, isSearch),
+		CanEdit:    canEdit(column, isSearch),
+		CanShow:    canShow(column, isSearch),
+		CanSearch:  canSearch(column, isSearch),
+		Parameters: inputParams(inputType, column, isSearch),
 	}
 }
 
-func CanEdit(column model.Column, isSearch bool) bool {
+func canEdit(column model.Column, isSearch bool) bool {
 	if isSearch {
 		return false
 	}
@@ -70,7 +71,7 @@ func CanEdit(column model.Column, isSearch bool) bool {
 	return true
 }
 
-func CanShow(column model.Column, isSearch bool) bool {
+func canShow(column model.Column, isSearch bool) bool {
 	if isSearch {
 		return false
 	}
@@ -82,7 +83,7 @@ func CanShow(column model.Column, isSearch bool) bool {
 	return true
 }
 
-func CanSearch(column model.Column, isSearch bool) bool {
+func canSearch(column model.Column, isSearch bool) bool {
 	if !isSearch {
 		return false
 	}
@@ -90,51 +91,51 @@ func CanSearch(column model.Column, isSearch bool) bool {
 	return column.GoType != model.TypeTime
 }
 
-func InputType(column model.Column, isSearch bool) string {
+func inputType(column model.Column, isSearch bool) string {
 	if column.PGType == model.TypePGText && column.PGName == "description" && !isSearch {
-		return TypeHtmlEditor
+		return TypeHTMLEditor
 	}
 
 	if column.IsFK {
-		return TypeHtmlSelect
+		return TypeHTMLSelect
 	}
 
 	switch column.PGType {
 	case model.TypePGText:
-		return TypeHtmlText
+		return TypeHTMLText
 	case model.TypeTime, model.TypePGTimetz:
-		return TypeHtmlTime
+		return TypeHTMLTime
 	case model.TypePGDate:
-		return TypeHtmlDate
+		return TypeHTMLDate
 	case model.TypePGTimestamp, model.TypePGTimestamptz:
-		return TypeHtmlDateTime
+		return TypeHTMLDateTime
 	case model.TypePGBool:
-		return TypeHtmlCheckbox
+		return TypeHTMLCheckbox
 	}
 
-	return TypeHtmlInput
+	return TypeHTMLInput
 }
 
-func InputParams(inputType string, column model.Column, isSearch bool) Parameters {
+func inputParams(inputType string, column model.Column, isSearch bool) Parameters {
 	switch inputType {
-	case TypeHtmlInput:
-		return HtmlInputParams(column)
-	case TypeHtmlText:
-		return HtmlTextParams(column)
-	case TypeHtmlEditor:
-		return HtmlEditorParams(column)
-	case TypeHtmlTime, TypeHtmlDate, TypeHtmlDateTime:
-		return HtmlDateTimeParams(column)
-	case TypeHtmlCheckbox:
-		return HtmlCheckboxParams(column)
-	case TypeHtmlSelect:
-		return HtmlSelectParams(column, isSearch || column.Nullable)
+	case TypeHTMLInput:
+		return htmlInputParams(column)
+	case TypeHTMLText:
+		return htmlTextParams(column)
+	case TypeHTMLEditor:
+		return htmlEditorParams(column)
+	case TypeHTMLTime, TypeHTMLDate, TypeHTMLDateTime:
+		return htmlDateTimeParams(column)
+	case TypeHTMLCheckbox:
+		return htmlCheckboxParams(column)
+	case TypeHTMLSelect:
+		return htmlSelectParams(column, isSearch || column.Nullable)
 	}
 
 	return nil
 }
 
-func HtmlInputParams(column model.Column) Parameters {
+func htmlInputParams(column model.Column) Parameters {
 	return Parameters{
 		Parameter{Key: "name", Value: column.GoName},
 		Parameter{Key: "value", Value: column.GoName},
@@ -143,7 +144,7 @@ func HtmlInputParams(column model.Column) Parameters {
 	}
 }
 
-func HtmlCheckboxParams(column model.Column) Parameters {
+func htmlCheckboxParams(column model.Column) Parameters {
 	return Parameters{
 		Parameter{Key: "name", Value: column.GoName},
 		Parameter{Key: "value", Value: column.GoName},
@@ -151,7 +152,7 @@ func HtmlCheckboxParams(column model.Column) Parameters {
 	}
 }
 
-func HtmlTextParams(column model.Column) Parameters {
+func htmlTextParams(column model.Column) Parameters {
 	return Parameters{
 		Parameter{Key: "name", Value: column.GoName},
 		Parameter{Key: "value", Value: column.GoName},
@@ -161,15 +162,15 @@ func HtmlTextParams(column model.Column) Parameters {
 	}
 }
 
-func HtmlEditorParams(column model.Column) Parameters {
-	return HtmlTextParams(column)
+func htmlEditorParams(column model.Column) Parameters {
+	return htmlTextParams(column)
 }
 
-func HtmlDateTimeParams(column model.Column) Parameters {
-	return HtmlTextParams(column)
+func htmlDateTimeParams(column model.Column) Parameters {
+	return htmlTextParams(column)
 }
 
-func HtmlSelectParams(column model.Column, nullable bool) Parameters {
+func htmlSelectParams(column model.Column, nullable bool) Parameters {
 	n := "false"
 	if nullable {
 		n = "true"
@@ -186,6 +187,6 @@ func HtmlSelectParams(column model.Column, nullable bool) Parameters {
 	}
 }
 
-func LangPath(entity model.Entity, column model.Column) string {
+func langPath(entity model.Entity, column model.Column) string {
 	return fmt.Sprintf("vt.%s.%s", entity.GoName, column.GoName)
 }

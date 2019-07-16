@@ -4,17 +4,21 @@ import (
 	"encoding/xml"
 )
 
+// input types
 const (
-	TypeHtmlInput    = "HTML_INPUT"
-	TypeHtmlText     = "HTML_TEXT"
-	TypeHtmlEditor   = "HTML_EDITOR"
-	TypeHtmlCheckbox = "HTML_CHECKBOX"
-	TypeHtmlDateTime = "HTML_DATETIME"
-	TypeHtmlDate     = "HTML_DATE"
-	TypeHtmlTime     = "HTML_TIME"
-	TypeHtmlSelect   = "HTML_SELECT"
-	TypeHtmlFile     = "HTML_FILE"
+	TypeHTMLInput    = "HTML_INPUT"
+	TypeHTMLText     = "HTML_TEXT"
+	TypeHTMLEditor   = "HTML_EDITOR"
+	TypeHTMLCheckbox = "HTML_CHECKBOX"
+	TypeHTMLDateTime = "HTML_DATETIME"
+	TypeHTMLDate     = "HTML_DATE"
+	TypeHTMLTime     = "HTML_TIME"
+	TypeHTMLSelect   = "HTML_SELECT"
+	TypeHTMLFile     = "HTML_FILE"
+)
 
+// types
+const (
 	String   = "TYPE_STRING"
 	Integer  = "TYPE_INTEGER"
 	Float    = "TYPE_FLOAT"
@@ -23,17 +27,29 @@ const (
 	Date     = "TYPE_DATE"
 	Time     = "TYPE_TIME"
 	Array    = "TYPE_ARRAY"
+)
 
+// model options
+const (
 	CanPages = "CanPages"
 	CanCache = "CanCache"
+)
 
+// nullable options
+const (
 	NullableYes   = "Yes"
 	NullableNo    = "No"
 	NullableEmpty = "CheckEmpty"
+)
 
+// special searches
+const (
 	SearchPage     = "page"
 	SearchPageSize = "pageSize"
+)
 
+// search types
+const (
 	SearchEquals     = "SEARCHTYPE_EQUALS"
 	SearchNotEquals  = "SEARCHTYPE_NOT_EQUALS"
 	SearchNull       = "SEARCHTYPE_NULL"
@@ -52,6 +68,7 @@ const (
 	SearchNotArray   = "SEARCHTYPE_NOT_INARRAY"
 )
 
+// Project is xml element
 type Project struct {
 	XMLName         xml.Name `xml:"Project" json:"-"`
 	Name            string
@@ -61,6 +78,7 @@ type Project struct {
 	Filename        string `xml:"-"`
 }
 
+// Package is xml element
 type Package struct {
 	XMLName  xml.Name `xml:"Package" json:"-"`
 	XMLxsi   string   `xml:"xmlns:xsi,attr"`
@@ -69,6 +87,7 @@ type Package struct {
 	Entities []*Entity `xml:"Entities>Entity"`
 }
 
+// Entity is xml element
 type Entity struct {
 	XMLName           xml.Name    `xml:"Entity" json:"-"`
 	Name              string      `xml:"Name,attr"`
@@ -84,6 +103,7 @@ type Entity struct {
 	Package           *Package    `xml:"-" json:"-"`
 }
 
+// Attribute is xml element
 type Attribute struct {
 	XMLName      xml.Name `xml:"Attribute" json:"-"`
 	Name         string   `xml:"Name,attr"`
@@ -102,6 +122,7 @@ type Attribute struct {
 	SearchType   string   `xml:"SearchType,attr"`
 }
 
+// EazeEntities is xml element
 type EazeEntities struct {
 	XMLName  xml.Name     `xml:"ArrayOfEazeEntity" json:"-"`
 	XMLxsi   string       `xml:"xmlns:xsi,attr"`
@@ -109,6 +130,7 @@ type EazeEntities struct {
 	Entities []EazeEntity `xml:"EazeEntity"`
 }
 
+// EazeEntity is xml element
 type EazeEntity struct {
 	XMLName           xml.Name `xml:"EazeEntity" json:"-"`
 	Name              string   `xml:"Name,attr"`
@@ -119,7 +141,7 @@ type EazeEntity struct {
 	Attributes        []TemplateAttribute `xml:"Attributes>TemplateAttribute"`
 }
 
-//<TemplateAttribute Name="formId" TitleKey="vt.form.formId" Type="HTML_INPUT" CanEdit="false" CanShow="false" CanSearch="false">
+// TemplateAttribute is xml element
 type TemplateAttribute struct {
 	XMLName    xml.Name `xml:"TemplateAttribute" json:"-"`
 	Name       string   `xml:"Name,attr"`
@@ -131,128 +153,19 @@ type TemplateAttribute struct {
 	CanSearch  bool     `xml:"CanSearch,attr"`
 	Parameters `xml:"Parameters>AttributeParameter"`
 }
+
+// Parameter is xml element
 type Parameter struct {
 	XMLName xml.Name `xml:"AttributeParameter" json:"-"`
 	Key     string   `xml:"Key,attr"`
 	Value   string   `xml:"Value,attr"`
 }
 
+// Packages is xml element
 type Packages map[string]*Package
+
+// Attributes is xml element
 type Attributes []*Attribute
+
+// Parameters is xml element
 type Parameters []Parameter
-
-// Actions.xml Model
-
-type ActionsXML struct {
-	XMLName xml.Name       `xml:"actions"`
-	Actions Actions        `xml:"action"`
-	Groups  []*ActionGroup `xml:"group"`
-}
-
-type ActionGroup struct {
-	XMLName xml.Name       `xml:"group"`
-	Name    string         `xml:"name,attr"`
-	Groups  []*ActionGroup `xml:"group"`
-	Actions Actions        `xml:"action"`
-}
-
-type Action struct {
-	XMLName   xml.Name         `xml:"action"`
-	Name      string           `xml:"name,attr"`
-	Path      string           `xml:"path,omitempty"`
-	Request   *ActionParams    `xml:"parameters>request>param,omitempty"`
-	Response  *ActionParams    `xml:"parameters>response>param,omitempty"`
-	Session   *ActionParams    `xml:"parameters>session>param,omitempty"`
-	Redirects *ActionRedirects `xml:"redirects>redirect,omitempty"`
-}
-
-type ActionRedirect struct {
-	XMLName xml.Name `xml:"redirect,omitempty"`
-	Name    string   `xml:"name,attr"`
-	Path    string   `xml:"path,attr"`
-	Host    string   `xml:"host,attr,omitempty"`
-}
-
-type ActionParam struct {
-	XMLName xml.Name `xml:"param,omitempty"`
-	Name    string   `xml:"name,attr"`
-	Value   string   `xml:",innerxml"`
-}
-type Actions []*Action
-type ActionParams []*ActionParam
-type ActionRedirects []*ActionRedirect
-
-// Pages.xml Model
-type PagesXML struct {
-	XMLName xml.Name    `xml:"sites"`
-	Sites   []*PageSite `xml:"site"`
-}
-
-type PageSite struct {
-	XMLName xml.Name   `xml:"site"`
-	Name    string     `xml:"name,attr"`
-	Names   string     `xml:"names,attr,omitempty"`
-	Hosts   PageHosts  `xml:"hosts>host,omitempty"`
-	Groups  PageGroups `xml:"pages>pageGroup,omitempty"`
-	Pages   Pages      `xml:"pages>page,omitempty"`
-}
-
-type Page struct {
-	XMLName  xml.Name `xml:"page"`
-	Uri      string   `xml:"uri,attr"`
-	Actions  string   `xml:"actions,omitempty"`
-	Template string   `xml:"template,omitempty"`
-	PageBootShutdown
-	PageSitemap
-}
-
-type PageGroup struct {
-	XMLName    xml.Name   `xml:"pageGroup"`
-	Name       string     `xml:"name,attr"`
-	PageGroups PageGroups `xml:"pageGroup,omitempty"`
-	Pages      Pages      `xml:"page,omitempty"`
-	PageBootShutdown
-	PageSitemap
-}
-
-type PageHost struct {
-	XMLName xml.Name    `xml:"host"`
-	Name    string      `xml:"name,attr"`
-	Actions PageActions `xml:"action"`
-}
-
-type PageAction struct {
-	XMLName xml.Name `xml:"action"`
-	Name    string   `xml:"name,attr"`
-	Value   string   `xml:",innerxml"`
-}
-
-type PageSitemap struct {
-	SitemapEnable bool `xml:"sitemap-enable,attr,omitempty"`
-}
-
-type PageBootShutdown struct {
-	Boot     *string `xml:"boot,attr"`
-	Shutdown *string `xml:"shutdown,attr"`
-}
-
-type PageHosts []*PageHost
-type Pages []*Page
-type PageGroups []*PageGroup
-type PageActions []*PageAction
-
-// ru.xml
-type LanguageXML struct {
-	XMLName  xml.Name      `xml:"language"`
-	Language string        `xml:"name,attr"`
-	Nodes    LanguageNodes `xml:",any"`
-}
-
-type LanguageNode struct {
-	XMLName  xml.Name
-	Value    string        `xml:",chardata"`
-	RawValue string        `xml:",innerxml"`
-	Nodes    LanguageNodes `xml:",any"`
-}
-
-type LanguageNodes []*LanguageNode

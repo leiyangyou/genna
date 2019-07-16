@@ -18,7 +18,7 @@ const (
 	pkg = "pkg"
 )
 
-// Basic represents basic generator
+// Generator represents mfd generator
 type Generator struct {
 	logger  *zap.Logger
 	options Options
@@ -79,19 +79,19 @@ func (g *Generator) Generate() error {
 	dirname := path.Dir(g.options.Output)
 
 	pack := NewPackage(entities, g.options)
-	if err := SaveFile(path.Join(dirname, g.options.Package+".xml"), pack); err != nil {
+	if err := saveXML(path.Join(dirname, g.options.Package+".xml"), pack); err != nil {
 		return xerrors.Errorf("save package error: %w", err)
 	}
 
 	eazeEntities := NewEazeEntities(entities)
-	if err := SaveFile(path.Join(dirname, g.options.Package+".EazeEntity.xml"), eazeEntities); err != nil {
+	if err := saveXML(path.Join(dirname, g.options.Package+".EazeEntity.xml"), eazeEntities); err != nil {
 		return xerrors.Errorf("save package error: %w", err)
 	}
 
 	return nil
 }
 
-func SaveFile(filename string, data interface{}) error {
+func saveXML(filename string, data interface{}) error {
 	file, err := util.File(filename)
 	if err != nil {
 		return xerrors.Errorf("create file error: %w", err)
@@ -107,4 +107,6 @@ func SaveFile(filename string, data interface{}) error {
 	if err := enc.Encode(data); err != nil {
 		return xerrors.Errorf("write xml error: %w", err)
 	}
+
+	return nil
 }

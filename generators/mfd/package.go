@@ -8,10 +8,11 @@ import (
 	"github.com/dizzyfool/genna/util"
 )
 
+// NewPackage creates package for mfg
 func NewPackage(entities []model.Entity, options Options) Package {
 	xmlEntities := make([]*Entity, len(entities))
 	for i, ent := range entities {
-		xmlEntities[i] = NewEntity(ent, options)
+		xmlEntities[i] = newEntity(ent, options)
 	}
 
 	return Package{
@@ -24,25 +25,25 @@ func NewPackage(entities []model.Entity, options Options) Package {
 	}
 }
 
-func NewEntity(entity model.Entity, options Options) *Entity {
+func newEntity(entity model.Entity, options Options) *Entity {
 	searches := Attributes{
-		NewPageSearch(),
-		NewPageSizeSearch(),
+		newPageSearch(),
+		newPageSizeSearch(),
 	}
 
 	attributes := Attributes{}
 	for _, column := range entity.Columns {
-		if search := NewSuggestedSearch(column); search != nil {
+		if search := newSuggestedSearch(column); search != nil {
 			searches = append(searches, search)
 		}
-		attributes = append(attributes, NewAttribute(column))
+		attributes = append(attributes, newAttribute(column))
 	}
 
 	return &Entity{
 		Name:              entity.GoName,
 		PackageName:       options.Package,
 		Table:             entity.PGFullName,
-		View:              View(entity.PGSchema, entity.PGName),
+		View:              view(entity.PGSchema, entity.PGName),
 		DefaultConnection: "",
 		Attributes:        &attributes,
 		Search:            &searches,
@@ -52,11 +53,11 @@ func NewEntity(entity model.Entity, options Options) *Entity {
 	}
 }
 
-func View(schema, table string) string {
+func view(schema, table string) string {
 	return util.JoinF(schema, fmt.Sprintf("get%s", strings.Title(table)))
 }
 
-func NewAttribute(column model.Column) *Attribute {
+func newAttribute(column model.Column) *Attribute {
 	fkModel := ""
 	if column.IsFK && column.Relation != nil {
 		fkModel = column.Relation.GoType
@@ -65,21 +66,21 @@ func NewAttribute(column model.Column) *Attribute {
 	return &Attribute{
 		Name:        column.GoName,
 		Key:         column.IsPK,
-		Addable:     Addable(column),
-		Updatable:   Updatable(column),
+		Addable:     addable(column),
+		Updatable:   updatable(column),
 		MinValue:    0,
 		MaxValue:    column.MaxLen,
 		DbName:      column.PGName,
-		FieldType:   FieldType(column),
+		FieldType:   fieldType(column),
 		ForeignKey:  fkModel,
-		ComplexType: ComplexType(column),
-		Nullable:    Nullable(column),
+		ComplexType: complexType(column),
+		Nullable:    nullable(column),
 		GoType:      column.Type,
 		SearchType:  SearchEquals,
 	}
 }
 
-func Nullable(column model.Column) string {
+func nullable(column model.Column) string {
 	switch {
 	case column.IsPK || column.Nullable:
 		return NullableYes
@@ -90,7 +91,7 @@ func Nullable(column model.Column) string {
 	}
 }
 
-func Updatable(column model.Column) bool {
+func updatable(column model.Column) bool {
 	if column.PGName == "createdAt" || column.PGName == "modifiedAt" {
 		return false
 	}
@@ -98,7 +99,7 @@ func Updatable(column model.Column) bool {
 	return true
 }
 
-func Addable(column model.Column) bool {
+func addable(column model.Column) bool {
 	if column.PGName == "createdAt" || column.PGName == "modifiedAt" {
 		return false
 	}
@@ -106,7 +107,7 @@ func Addable(column model.Column) bool {
 	return true
 }
 
-func FieldType(column model.Column) string {
+func fieldType(column model.Column) string {
 	if column.IsArray {
 		return Array
 	}
@@ -137,7 +138,7 @@ func FieldType(column model.Column) string {
 	return String
 }
 
-func PHPType(column model.Column) string {
+func phpType(column model.Column) string {
 	switch column.GoType {
 	case model.TypeString:
 		return "string"
@@ -152,9 +153,9 @@ func PHPType(column model.Column) string {
 	return "string"
 }
 
-func ComplexType(column model.Column) string {
+func complexType(column model.Column) string {
 	if column.IsArray {
-		phpType := PHPType(column)
+		phpType := phpType(column)
 		for i := 0; i < column.Dimensions; i++ {
 			phpType = fmt.Sprintf("[]%s", phpType)
 		}
@@ -168,10 +169,10 @@ func ComplexType(column model.Column) string {
 	return ""
 }
 
-func NewSuggestedSearch(column model.Column) *Attribute {
+func newSuggestedSearch(column model.Column) *Attribute {
 	// TODO add suggested searches
 	if !column.IsArray && column.PGType == model.TypePGText {
-		return NewSearch(
+		return newSearch(
 			fmt.Sprintf("%sILike", column.GoName),
 			column.PGName,
 			"",
@@ -184,15 +185,15 @@ func NewSuggestedSearch(column model.Column) *Attribute {
 	return nil
 }
 
-func NewPageSearch() *Attribute {
-	return NewSearch(SearchPage, SearchPage, "0", Integer, Integer, SearchEquals)
+func newPageSearch() *Attribute {
+	return newSearch(SearchPage, SearchPage, "0", Integer, Integer, SearchEquals)
 }
 
-func NewPageSizeSearch() *Attribute {
-	return NewSearch(SearchPageSize, SearchPageSize, "25", Integer, Integer, SearchEquals)
+func newPageSizeSearch() *Attribute {
+	return newSearch(SearchPageSize, SearchPageSize, "25", Integer, Integer, SearchEquals)
 }
 
-func NewSearch(name, dbName, defaultValue, fieldType, goType, searchType string) *Attribute {
+func newSearch(name, dbName, defaultValue, fieldType, goType, searchType string) *Attribute {
 	return &Attribute{
 		Name:         name,
 		Key:          false,
