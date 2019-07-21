@@ -1,14 +1,13 @@
 package cmd
 
 import (
-	"os"
-
-	"github.com/dizzyfool/genna/generators/model"
 	"github.com/dizzyfool/genna/generators/named"
 	"github.com/dizzyfool/genna/generators/search"
 	"github.com/dizzyfool/genna/generators/validate"
 	"github.com/leiyangyou/genna/generators/withts"
+	"os"
 
+	"github.com/dizzyfool/genna/generators/model"
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"
 )
