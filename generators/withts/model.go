@@ -147,7 +147,7 @@ func NewTemplateColumn(entity *model.Entity, column model.Column, options Option
 	isUpdatedAt := false
 	if options.UpdatedAt == column.PGName && column.GoType == model.TypeTime && !column.IsArray {
 		tags.AddTag("sql", ",default:now()")
-		entity.Imports = append(entity.Imports,  "context")
+		entity.Imports = append(entity.Imports,  "context", "github.com/go-pg/pg/orm")
 		isUpdatedAt = true
 	}
 
