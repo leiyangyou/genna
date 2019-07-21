@@ -1,4 +1,4 @@
-package search
+package withts
 
 import (
 	"io/ioutil"
@@ -20,7 +20,9 @@ func TestGenerator_Generate(t *testing.T) {
 
 	generator.options.Def()
 	generator.options.URL = `postgres://genna:genna@localhost:5432/genna?sslmode=disable`
-	generator.options.Output = path.Join(os.TempDir(), "search_test.go")
+	generator.options.Output = path.Join(os.TempDir(), "model_test.go")
+	generator.options.CreatedAt = "createdAt"
+	generator.options.UpdatedAt = "updatedAt"
 	generator.options.FollowFKs = true
 
 	if err := generator.Generate(); err != nil {

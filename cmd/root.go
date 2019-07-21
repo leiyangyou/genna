@@ -7,6 +7,7 @@ import (
 	"github.com/dizzyfool/genna/generators/named"
 	"github.com/dizzyfool/genna/generators/search"
 	"github.com/dizzyfool/genna/generators/validate"
+	"github.com/leiyangyou/genna/generators/withts"
 
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"
@@ -44,6 +45,7 @@ func init() {
 		search.CreateCommand(logger),
 		validate.CreateCommand(logger),
 		named.CreateCommand(logger),
+		withts.CreateCommand(logger),
 	)
 }
 

@@ -2,8 +2,12 @@
 //nolint
 package model
 
+import (
+	"time"
+)
+
 type ColumnsProject struct {
-	ID, Name string
+	ID, Name, CreatedAt, UpdatedAt string
 }
 
 type ColumnsUser struct {
@@ -23,8 +27,10 @@ type ColumnsSt struct {
 
 var Columns = ColumnsSt{
 	Project: ColumnsProject{
-		ID:   "projectId",
-		Name: "name",
+		ID:        "projectId",
+		Name:      "name",
+		CreatedAt: "createdAt",
+		UpdatedAt: "updatedAt",
 	},
 	User: ColumnsUser{
 		ID:        "userId",
@@ -78,8 +84,10 @@ var Tables = TablesSt{
 type Project struct {
 	tableName struct{} `sql:"projects,alias:t" pg:",discard_unknown_columns"`
 
-	ID   int    `sql:"projectId,pk"`
-	Name string `sql:"name,notnull"`
+	ID        int       `sql:"projectId,pk"`
+	Name      string    `sql:"name,notnull"`
+	CreatedAt time.Time `sql:"createdAt,notnull,,default:now()"`
+	UpdatedAt time.Time `sql:"updatedAt,notnull,,default:now()"`
 }
 
 type User struct {
@@ -100,4 +108,9 @@ type GeoCountry struct {
 	ID     int    `sql:"countryId,pk"`
 	Code   string `sql:"code,notnull"`
 	Coords []int  `sql:"coords,array"`
+}
+
+func (m *Project) BeforeUpdate(ctx context.Context, db orm.DB) error {
+	m.UpdatedAt = time.Now()
+	return nil
 }

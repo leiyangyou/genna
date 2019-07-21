@@ -1,4 +1,4 @@
-package model
+package withts
 
 import (
 	"github.com/dizzyfool/genna/generators/base"
@@ -15,6 +15,8 @@ const (
 	noDiscard  = "no-discard"
 	noAlias    = "no-alias"
 	softDelete = "soft-delete"
+	createdAt = "createdAt"
+	updatedAt = "updatedAt"
 )
 
 // CreateCommand creates generator command
@@ -56,6 +58,8 @@ func (g *Basic) AddFlags(command *cobra.Command) {
 
 	flags.BoolP(keepPK, "k", false, "keep primary key name as is (by default it should be converted to 'ID')")
 	flags.StringP(softDelete, "s", "", "field for soft_delete tag\n")
+	flags.String(createdAt, "created_at", "created at field")
+	flags.String(updatedAt, "updated_at", "updated at field")
 
 	flags.BoolP(noAlias, "w", false, `do not set 'alias' tag to "t"`)
 	flags.BoolP(noDiscard, "d", false, "do not use 'discard_unknown_columns' tag\n")
@@ -89,6 +93,14 @@ func (g *Basic) ReadFlags(command *cobra.Command) error {
 	}
 
 	if g.options.NoAlias, err = flags.GetBool(noAlias); err != nil {
+		return err
+	}
+
+	if g.options.CreatedAt, err = flags.GetString(createdAt); err != nil {
+		return err
+	}
+
+	if g.options.UpdatedAt, err = flags.GetString(updatedAt); err != nil {
 		return err
 	}
 

@@ -7,6 +7,8 @@ create table "projects"
 (
     "projectId" serial not null,
     "name"      text   not null,
+    "createdAt" TIMESTAMP    NOT NULL DEFAULT now(),
+    "updatedAt" TIMESTAMP    NOT NULL DEFAULT now(),
 
     primary key ("projectId")
 );

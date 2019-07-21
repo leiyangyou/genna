@@ -1,4 +1,4 @@
-package model
+package withts
 
 import (
 	"fmt"
@@ -104,6 +104,8 @@ type TemplateColumn struct {
 
 	Tag     template.HTML
 	Comment template.HTML
+	IsCreatedAt bool
+	IsUpdatedAt bool
 }
 
 // NewTemplateColumn creates a column for template
@@ -134,6 +136,20 @@ func NewTemplateColumn(column model.Column, options Options) TemplateColumn {
 		tags.AddTag("pg", ",soft_delete")
 	}
 
+	// As default is not exposed in genna, assuming default is now
+
+	isCreatedAt := false
+	if options.CreatedAt == column.PGName && column.GoType == model.TypeTime && !column.IsArray {
+		tags.AddTag("sql", ",default:now()")
+		isCreatedAt = true
+	}
+
+	isUpdatedAt := false
+	if options.UpdatedAt == column.PGName && column.GoType == model.TypeTime && !column.IsArray {
+		tags.AddTag("sql", ",default:now()")
+		isUpdatedAt = true
+	}
+
 	if column.GoType == model.TypeInterface {
 		comment = "// unsupported"
 		tags = util.NewAnnotation().AddTag("sql", "-")
@@ -144,6 +160,8 @@ func NewTemplateColumn(column model.Column, options Options) TemplateColumn {
 
 		Tag:     template.HTML(fmt.Sprintf("`%s`", tags.String())),
 		Comment: template.HTML(comment),
+		IsCreatedAt: isCreatedAt,
+		IsUpdatedAt: isUpdatedAt,
 	}
 }
 

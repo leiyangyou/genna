@@ -1,4 +1,4 @@
-package search
+package withts
 
 import (
 	"strings"
@@ -18,11 +18,23 @@ type Options struct {
 	// Do not replace primary key name to ID
 	KeepPK bool
 
+	// Soft delete column
+	SoftDelete string
+
+	// use sql.Null... instead of pointers
+	UseSQLNulls bool
+
 	// Do not generate alias tag
 	NoAlias bool
 
-	// Strict types in filters
-	Relaxed bool
+	// Do not generate discard_unknown_columns tag
+	NoDiscard bool
+
+	// Created at column
+	CreatedAt string
+
+	// Updated at column
+	UpdatedAt string
 }
 
 // Def fills default values of an options
