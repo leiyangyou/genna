@@ -21,7 +21,7 @@ const (
 
 // CreateCommand creates generator command
 func CreateCommand(logger *zap.Logger) *cobra.Command {
-	return base.CreateCommand("model", "Basic go-pg model generator", New(logger))
+	return base.CreateCommand("model-named-ts", "Basic go-pg model generator with named structures & auto timestamps", New(logger))
 }
 
 // Basic represents basic generator
