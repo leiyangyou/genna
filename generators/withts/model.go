@@ -25,11 +25,11 @@ func NewTemplatePackage(entities []model.Entity, options Options) TemplatePackag
 
 	models := make([]TemplateEntity, len(entities))
 	for i, entity := range entities {
-		for _, imp := range entity.Imports {
+		models[i] = NewTemplateEntity(entity, options)
+
+		for _, imp := range models[i].Imports {
 			imports.Add(imp)
 		}
-
-		models[i] = NewTemplateEntity(entity, options)
 	}
 
 	return TemplatePackage{
@@ -65,7 +65,7 @@ func NewTemplateEntity(entity model.Entity, options Options) TemplateEntity {
 
 	columns := make([]TemplateColumn, len(entity.Columns))
 	for i, column := range entity.Columns {
-		columns[i] = NewTemplateColumn(column, options)
+		columns[i] = NewTemplateColumn(&entity, column, options)
 	}
 
 	relations := make([]TemplateRelation, len(entity.Relations))
@@ -109,7 +109,7 @@ type TemplateColumn struct {
 }
 
 // NewTemplateColumn creates a column for template
-func NewTemplateColumn(column model.Column, options Options) TemplateColumn {
+func NewTemplateColumn(entity *model.Entity, column model.Column, options Options) TemplateColumn {
 	if !options.KeepPK && column.IsPK {
 		column.GoName = util.ID
 	}
@@ -147,6 +147,7 @@ func NewTemplateColumn(column model.Column, options Options) TemplateColumn {
 	isUpdatedAt := false
 	if options.UpdatedAt == column.PGName && column.GoType == model.TypeTime && !column.IsArray {
 		tags.AddTag("sql", ",default:now()")
+		entity.Imports = append(entity.Imports,  "context")
 		isUpdatedAt = true
 	}
 
