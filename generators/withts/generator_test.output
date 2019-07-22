@@ -4,6 +4,7 @@ package model
 
 import (
 	"context"
+	"github.com/go-pg/pg/orm"
 	"time"
 )
 
@@ -87,8 +88,8 @@ type Project struct {
 
 	ID        int       `sql:"projectId,pk"`
 	Name      string    `sql:"name,notnull"`
-	CreatedAt time.Time `sql:"createdAt,notnull,,default:now()"`
-	UpdatedAt time.Time `sql:"updatedAt,notnull,,default:now()"`
+	CreatedAt time.Time `sql:"createdAt,notnull,default:now()"`
+	UpdatedAt time.Time `sql:"updatedAt,notnull,default:now()"`
 }
 
 type User struct {

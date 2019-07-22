@@ -133,20 +133,20 @@ func NewTemplateColumn(entity *model.Entity, column model.Column, options Option
 	}
 
 	if options.SoftDelete == column.PGName && column.Nullable && column.GoType == model.TypeTime && !column.IsArray {
-		tags.AddTag("pg", ",soft_delete")
+		tags.AddTag("pg", "soft_delete")
 	}
 
 	// As default is not exposed in genna, assuming default is now
 
 	isCreatedAt := false
 	if options.CreatedAt == column.PGName && column.GoType == model.TypeTime && !column.IsArray {
-		tags.AddTag("sql", ",default:now()")
+		tags.AddTag("sql", "default:now()")
 		isCreatedAt = true
 	}
 
 	isUpdatedAt := false
 	if options.UpdatedAt == column.PGName && column.GoType == model.TypeTime && !column.IsArray {
-		tags.AddTag("sql", ",default:now()")
+		tags.AddTag("sql", "default:now()")
 		entity.Imports = append(entity.Imports,  "context", "github.com/go-pg/pg/orm")
 		isUpdatedAt = true
 	}
